@@ -108,7 +108,7 @@ export default class ResolutionFacet extends React.PureComponent {
     const values = this.props.resolutions.map(resolution => this.getFacetItemName(resolution));
 
     return (
-      <FacetBox property={this.property}>
+      <FacetBox>
         <FacetHeader
           name={translate('issues.facet', this.property)}
           onClear={this.handleClear}

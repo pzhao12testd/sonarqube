@@ -19,7 +19,6 @@
  */
 // @flow
 import React from 'react';
-import PageCounter from '../../../components/common/PageCounter';
 import { translate } from '../../../helpers/l10n';
 import { formatMeasure } from '../../../helpers/measures';
 
@@ -31,13 +30,19 @@ type Props = {
 };
 */
 
-export default function IssuesCounter(props /*:Props*/) {
-  return (
-    <PageCounter
-      className="spacer-left flash flash-heavy"
-      current={props.current}
-      label={translate('issues.issues')}
-      total={props.total}
-    />
-  );
-}
+const IssuesCounter = (props /*: Props */) => (
+  <span className={props.className}>
+    <strong>
+      {props.current != null && (
+        <span>
+          {formatMeasure(props.current + 1, 'INT')}
+          {' / '}
+        </span>
+      )}
+      {formatMeasure(props.total, 'INT')}
+    </strong>{' '}
+    {translate('issues.issues')}
+  </span>
+);
+
+export default IssuesCounter;

@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.sonarsource.parent</groupId>
@@ -48,20 +45,21 @@
 
   <properties>
     <!-- see http://repo1.maven.org/maven2/org/sonarsource/dotnet/sonar-csharp-plugin/ -->
+
     <!-- Do not forget to exclude any new transitive dependencies -->
-    <sonarCSharp.version>6.7.1.4347</sonarCSharp.version>
+    <sonarCSharp.version>6.5.0.3766</sonarCSharp.version>
     <!-- see http://repo1.maven.org/maven2/org/sonarsource/java/sonar-java-plugin/ -->
     <!-- Do not forget to exclude any new transitive dependencies -->
-    <sonarJava.version>5.1.0.13090</sonarJava.version>
+    <sonarJava.version>4.15.0.12310</sonarJava.version>
     <!-- see http://repo1.maven.org/maven2/org/sonarsource/javascript/sonar-javascript-plugin/ -->
     <!-- Do not forget to exclude any new transitive dependencies -->
-    <sonarJavaScript.version>4.0.0.5862</sonarJavaScript.version>
+    <sonarJavaScript.version>3.2.0.5506</sonarJavaScript.version>
     <!-- see http://repo1.maven.org/maven2/org/sonarsource/php/sonar-php-plugin/ -->
     <!-- Do not forget to exclude any new transitive dependencies -->
-    <sonarPhp.version>2.12.1.3018</sonarPhp.version>
+    <sonarPhp.version>2.11.0.2485</sonarPhp.version>
     <!-- see http://repo1.maven.org/maven2/org/sonarsource/python/sonar-python-plugin/ -->
     <!-- Do not forget to exclude any new transitive dependencies -->
-    <sonarPython.version>1.9.0.2010</sonarPython.version>
+    <sonarPython.version>1.8.0.1496</sonarPython.version>
     <!-- see http://repo1.maven.org/maven2/org/sonarsource/flex/sonar-flex-plugin/ -->
     <!-- Do not forget to exclude any new transitive dependencies -->
     <sonarFlex.version>2.3</sonarFlex.version>
@@ -69,7 +67,7 @@
     <!-- Do not forget to exclude any new transitive dependencies -->
     <sonarXml.version>1.4.3.1027</sonarXml.version>
     <!-- see https://repo1.maven.org/maven2/org/sonarsource/typescript/sonar-typescript-plugin/ -->
-    <sonarTs.version>1.5.0.2122</sonarTs.version>
+    <sonarTs.version>1.1.0.1079</sonarTs.version>
     <!-- see http://repo1.maven.org/maven2/org/sonarsource/scm/git/sonar-scm-git-plugin/ -->
     <sonarGit.version>1.3.0.869</sonarGit.version>
     <!-- see http://repo1.maven.org/maven2/org/sonarsource/scm/svn/sonar-scm-svn-plugin/ -->
@@ -379,7 +377,21 @@
           <threadCount>1</threadCount>
         </configuration>
       </plugin>
-    </plugins>
+    <plugin>
+                <groupId>edu.illinois</groupId>
+                <artifactId>starts-maven-plugin</artifactId>
+                <version>1.3</version>
+                <executions>
+                    <execution>
+                        <id>starts</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>starts</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
   </build>
 
   <dependencyManagement>
@@ -1453,102 +1465,7 @@
         <module>tests/plugins</module>
       </modules>
     </profile>
-
-    <profile>
-      <id>deploy-sonarsource</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>enforce-deploy-settings</id>
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-                <configuration>
-                  <rules>
-                    <requireProperty>
-                      <property>gitRepositoryName</property>
-                      <message>You must set name of Git repository in your pom</message>
-                    </requireProperty>
-                    <requireEnvironmentVariable>
-                      <variableName>ARTIFACTORY_URL</variableName>
-                    </requireEnvironmentVariable>
-                    <requireEnvironmentVariable>
-                      <variableName>ARTIFACTORY_DEPLOY_REPO</variableName>
-                    </requireEnvironmentVariable>
-                    <requireEnvironmentVariable>
-                      <variableName>ARTIFACTORY_DEPLOY_USERNAME</variableName>
-                    </requireEnvironmentVariable>
-                    <requireEnvironmentVariable>
-                      <variableName>ARTIFACTORY_DEPLOY_PASSWORD</variableName>
-                    </requireEnvironmentVariable>
-                  </rules>
-                  <fail>true</fail>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <!-- this maven plugin is not deployed in Maven Central. It should be downloaded
-            from JFrog JCenter or from SonarSource repositories -->
-            <groupId>org.jfrog.buildinfo</groupId>
-            <artifactId>artifactory-maven-plugin</artifactId>
-            <version>${version.artifactory.plugin}</version>
-            <executions>
-              <execution>
-                <id>build-info</id>
-                <goals>
-                  <goal>publish</goal>
-                </goals>
-                <configuration>
-                  <artifactory>
-                    <envVarsExcludePatterns>
-                      *password*,*PASSWORD*,*secret*,*MAVEN_CMD_LINE_ARGS*,sun.java.command,*token*,*TOKEN*,*LOGIN*,*login*
-                    </envVarsExcludePatterns>
-                    <includeEnvVars>true</includeEnvVars>
-                    <timeoutSec>60</timeoutSec>
-                  </artifactory>
-                  <deployProperties>
-                    <build.name>${gitRepositoryName}</build.name>
-                    <build.number>{{BUILD_NUMBER}}</build.number>
-                    <pr.branch.target>{{PULL_REQUEST_BRANCH_TARGET}}</pr.branch.target>
-                    <pr.number>{{PULL_REQUEST_NUMBER}}</pr.number>
-                    <vcs.branch>{{GIT_BRANCH}}</vcs.branch>
-                    <vcs.revision>{{GIT_COMMIT}}</vcs.revision>
-                    <version>${project.version}</version>
-                  </deployProperties>
-                  <licenses>
-                    <autoDiscover>true</autoDiscover>
-                    <includePublishedArtifacts>false</includePublishedArtifacts>
-                    <runChecks>true</runChecks>
-                    <scopes>project,provided</scopes>
-                    <violationRecipients>licences-control@sonarsource.com</violationRecipients>
-                  </licenses>
-                  <publisher>
-                    <contextUrl>${env.ARTIFACTORY_URL}</contextUrl>
-                    <repoKey>${env.ARTIFACTORY_DEPLOY_REPO}</repoKey>
-                    <username>${env.ARTIFACTORY_DEPLOY_USERNAME}</username>
-                    <password>${env.ARTIFACTORY_DEPLOY_PASSWORD}</password>
-                    <publishBuildInfo>true</publishBuildInfo>
-                    <publishArtifacts>true</publishArtifacts>
-                  </publisher>
-                  <buildInfo>
-                    <buildName>${gitRepositoryName}</buildName>
-                    <buildNumber>{{BUILD_NUMBER}}</buildNumber>
-                    <buildUrl>{{CI_BUILD_URL|BUILD_URL}}</buildUrl>
-                    <vcsRevision>{{GIT_COMMIT}}</vcsRevision>
-                  </buildInfo>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
   </profiles>
 
 </project>
+

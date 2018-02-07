@@ -76,6 +76,7 @@ import org.sonar.db.DbClient;
 import org.sonar.db.DefaultDatabase;
 import org.sonar.db.purge.PurgeProfiler;
 import org.sonar.process.NetworkUtilsImpl;
+import org.sonar.process.ProcessProperties;
 import org.sonar.process.Props;
 import org.sonar.process.logging.LogbackHelper;
 import org.sonar.server.component.ComponentFinder;
@@ -159,7 +160,6 @@ import org.sonar.server.webhook.WebhookModule;
 import org.sonarqube.ws.Rules;
 
 import static java.util.Objects.requireNonNull;
-import static org.sonar.process.ProcessProperties.Property.CLUSTER_ENABLED;
 
 public class ComputeEngineContainerImpl implements ComputeEngineContainer {
 
@@ -436,7 +436,7 @@ public class ComputeEngineContainerImpl implements ComputeEngineContainer {
       // cleaning
       CeCleaningModule.class);
 
-    if (props.valueAsBoolean(CLUSTER_ENABLED.getKey())) {
+    if (props.valueAsBoolean(ProcessProperties.CLUSTER_ENABLED)) {
       container.add(
         // system health
         CeDistributedInformationImpl.class,

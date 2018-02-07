@@ -20,9 +20,8 @@
 package org.sonar.server.badge.ws;
 
 import org.sonar.api.config.Configuration;
+import org.sonar.core.config.WebConstants;
 import org.sonar.core.platform.Module;
-
-import static org.sonar.process.ProcessProperties.Property.SONARCLOUD_ENABLED;
 
 public class ProjectBadgesWsModule extends Module {
 
@@ -34,7 +33,7 @@ public class ProjectBadgesWsModule extends Module {
 
   @Override
   protected void configureModule() {
-    if (!config.getBoolean(SONARCLOUD_ENABLED.getKey()).orElse(false)) {
+    if (!config.getBoolean(WebConstants.SONARCLOUD_ENABLED).orElse(false)) {
       return;
     }
     add(

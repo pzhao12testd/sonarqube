@@ -34,7 +34,6 @@ class MetaQualityProfiles extends React.PureComponent {
     component: { organization: string },
     customOrganizations: boolean,
     languages: { [string]: { name: string } },
-    organization: string | void;
     profiles: Array<{ key: string, language: string, name: string }>
   };
 */
@@ -73,11 +72,10 @@ class MetaQualityProfiles extends React.PureComponent {
 
   loadDeprecatedRulesForProfile(profileKey) {
     const data = {
-      activation: 'true',
-      organization: this.props.organization,
-      ps: 1,
       qprofile: profileKey,
-      statuses: 'DEPRECATED'
+      activation: 'true',
+      statuses: 'DEPRECATED',
+      ps: 1
     };
     return searchRules(data).then(r => r.total);
   }

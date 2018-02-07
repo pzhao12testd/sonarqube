@@ -78,8 +78,8 @@ export default class IssueTags extends React.PureComponent {
             className={'js-issue-edit-tags button-link issue-action issue-action-with-options'}
             onClick={this.toggleSetTags}>
             <TagsList
-              allowUpdate={this.props.canSetTags}
               tags={issue.tags && issue.tags.length > 0 ? issue.tags : [translate('issue.no_tag')]}
+              allowUpdate={this.props.canSetTags}
             />
           </button>
         </BubblePopupHelper>
@@ -87,9 +87,8 @@ export default class IssueTags extends React.PureComponent {
     } else {
       return (
         <TagsList
-          allowUpdate={this.props.canSetTags}
-          className="note"
           tags={issue.tags && issue.tags.length > 0 ? issue.tags : [translate('issue.no_tag')]}
+          allowUpdate={this.props.canSetTags}
         />
       );
     }

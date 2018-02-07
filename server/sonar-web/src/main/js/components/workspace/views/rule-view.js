@@ -21,7 +21,7 @@ import { union } from 'lodash';
 import Marionette from 'backbone.marionette';
 import BaseView from './base-viewer-view';
 import Template from '../templates/workspace-rule.hbs';
-import { getPathUrlAsString, getRulesUrl } from '../../../helpers/urls';
+import { getRulesUrl } from '../../../helpers/urls';
 import { areThereCustomOrganizations } from '../../../store/organizations/utils';
 
 export default BaseView.extend({
@@ -38,11 +38,9 @@ export default BaseView.extend({
 
   serializeData() {
     const query = { rule_key: this.model.get('key') };
-    const permalink = getPathUrlAsString(
-      areThereCustomOrganizations()
-        ? getRulesUrl(query, this.model.get('organization'))
-        : getRulesUrl(query, undefined)
-    );
+    const permalink = areThereCustomOrganizations()
+      ? getRulesUrl(query, this.model.get('organization'))
+      : getRulesUrl(query);
 
     return {
       ...Marionette.LayoutView.prototype.serializeData.apply(this, arguments),

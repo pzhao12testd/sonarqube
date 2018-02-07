@@ -109,40 +109,44 @@ export default class BulkChangeModal extends React.PureComponent {
     this.mounted = false;
   }
 
-  loadIssues = () => this.props.fetchIssues({ additionalFields: 'actions,transitions', ps: 250 });
-
-  getDefaultAssignee = () => {
-    const { currentUser } = this.props;
-    const { issues } = this.state;
-    const options = [];
-
-    if (currentUser.isLoggedIn) {
-      const canBeAssignedToMe =
-        issues.filter(issue => issue.assignee !== currentUser.login).length > 0;
-      if (canBeAssignedToMe) {
-        options.push({
-          avatar: currentUser.avatar,
-          label: currentUser.name,
-          value: currentUser.login
-        });
-      }
-    }
-
-    const canBeUnassigned = issues.filter(issue => issue.assignee).length > 0;
-    if (canBeUnassigned) {
-      options.push({ label: translate('unassigned'), value: '' });
-    }
-
-    return options;
-  };
-
   handleCloseClick = (e /*: Event & { target: HTMLElement } */) => {
     e.preventDefault();
     e.target.blur();
     this.props.onClose();
   };
 
-  handleAssigneeSearch = (query /*: string */) => searchAssignees(query, this.state.organization);
+  loadIssues = () => {
+    return this.props.fetchIssues({ additionalFields: 'actions,transitions', ps: 250 });
+  };
+
+  handleAssigneeSearch = (query /*: string */) => {
+    if (query.length > 1) {
+      return searchAssignees(query, this.state.organization);
+    } else {
+      const { currentUser } = this.props;
+      const { issues } = this.state;
+      const options = [];
+
+      if (currentUser.isLoggedIn) {
+        const canBeAssignedToMe =
+          issues.filter(issue => issue.assignee !== currentUser.login).length > 0;
+        if (canBeAssignedToMe) {
+          options.push({
+            email: currentUser.email,
+            label: currentUser.name,
+            value: currentUser.login
+          });
+        }
+      }
+
+      const canBeUnassigned = issues.filter(issue => issue.assignee).length > 0;
+      if (canBeUnassigned) {
+        options.push({ label: translate('unassigned'), value: '' });
+      }
+
+      return Promise.resolve(options);
+    }
+  };
 
   handleAssigneeSelect = (assignee /*: string */) => {
     this.setState({ assignee });
@@ -266,16 +270,19 @@ export default class BulkChangeModal extends React.PureComponent {
     </div>
   );
 
-  renderAssigneeOption = (option /*: { avatar?: string, email?: string, label: string } */) => {
-    return (
-      <span>
-        {option.avatar != null && (
-          <Avatar className="spacer-right" hash={option.avatar} name={option.label} size={16} />
-        )}
-        {option.label}
-      </span>
-    );
-  };
+  renderAssigneeOption = (option /*: { avatar?: string, email?: string, label: string } */) => (
+    <span>
+      {option.avatar != null && (
+        <Avatar
+          className="little-spacer-right"
+          hash={option.avatar}
+          name={option.label}
+          size={16}
+        />
+      )}
+      {option.label}
+    </span>
+  );
 
   renderAssigneeField = () => {
     const affected /*: number */ = this.state.issues.filter(hasAction('assign')).length;
@@ -286,9 +293,9 @@ export default class BulkChangeModal extends React.PureComponent {
 
     const input = (
       <SearchSelect
-        defaultOptions={this.getDefaultAssignee()}
         onSearch={this.handleAssigneeSearch}
         onSelect={this.handleAssigneeSelect}
+        minimumQueryLength={2}
         renderOption={this.renderAssigneeOption}
         resetOnBlur={false}
         value={this.state.assignee}
