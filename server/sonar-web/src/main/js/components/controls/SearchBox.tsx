@@ -29,9 +29,7 @@ import './SearchBox.css';
 
 interface Props {
   autoFocus?: boolean;
-  className?: string;
   innerRef?: (node: HTMLInputElement | null) => void;
-  id?: string;
   minLength?: number;
   onChange: (value: string) => void;
   onClick?: React.MouseEventHandler<HTMLInputElement>;
@@ -129,7 +127,7 @@ export default class SearchBox extends React.PureComponent<Props, State> {
     const tooShort = minLength !== undefined && value.length > 0 && value.length < minLength;
 
     return (
-      <div className={classNames('search-box', this.props.className)} id={this.props.id}>
+      <div className="search-box">
         <input
           autoComplete="off"
           autoFocus={this.props.autoFocus}

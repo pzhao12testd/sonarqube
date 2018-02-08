@@ -52,8 +52,8 @@ import org.sonar.server.exceptions.BadRequestException;
 import org.sonar.server.exceptions.ForbiddenException;
 import org.sonar.server.language.LanguageTesting;
 import org.sonar.server.organization.TestDefaultOrganizationProvider;
-import org.sonar.server.qualityprofile.QProfileTreeImpl;
 import org.sonar.server.qualityprofile.RuleActivator;
+import org.sonar.server.qualityprofile.RuleActivatorContextFactory;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
 import org.sonar.server.rule.index.RuleIndex;
 import org.sonar.server.rule.index.RuleIndexDefinition;
@@ -95,9 +95,9 @@ public class ChangeParentActionTest {
   private ActiveRuleIndexer activeRuleIndexer;
   private WsActionTester ws;
   private OrganizationDto organization;
+  private RuleActivator ruleActivator;
   private Language language = LanguageTesting.newLanguage(randomAlphanumeric(20));
   private String ruleRepository = randomAlphanumeric(5);
-  private QProfileTreeImpl qProfileTree;
 
   @Before
   public void setUp() {
@@ -107,12 +107,20 @@ public class ChangeParentActionTest {
     ruleIndex = new RuleIndex(esClient, System2.INSTANCE);
     ruleIndexer = new RuleIndexer(esClient, dbClient);
     activeRuleIndexer = new ActiveRuleIndexer(dbClient, esClient);
+    RuleActivatorContextFactory ruleActivatorContextFactory = new RuleActivatorContextFactory(dbClient);
     TypeValidations typeValidations = new TypeValidations(Collections.emptyList());
-    RuleActivator ruleActivator = new RuleActivator(System2.INSTANCE, dbClient, typeValidations, userSession);
-    qProfileTree = new QProfileTreeImpl(dbClient, ruleActivator, System2.INSTANCE, activeRuleIndexer);
+    ruleActivator = new RuleActivator(System2.INSTANCE, dbClient, ruleIndex, ruleActivatorContextFactory, typeValidations, activeRuleIndexer, userSession);
+
     ChangeParentAction underTest = new ChangeParentAction(
       dbClient,
-      qProfileTree,
+      new RuleActivator(
+        System2.INSTANCE,
+        dbClient,
+        ruleIndex,
+        ruleActivatorContextFactory,
+        typeValidations,
+        activeRuleIndexer,
+        userSession),
       new Languages(),
       new QProfileWsSupport(
         dbClient,
@@ -180,7 +188,7 @@ public class ChangeParentActionTest {
     activeRuleIndexer.indexOnStartup(emptySet());
 
     // Set parent 1
-    qProfileTree.setParentAndCommit(dbSession, child, parent1);
+    ruleActivator.setParentAndCommit(dbSession, child, parent1);
 
     // Set parent 2 through WS
     ws.newRequest()
@@ -208,7 +216,7 @@ public class ChangeParentActionTest {
     activeRuleIndexer.indexOnStartup(emptySet());
 
     // Set parent
-    qProfileTree.setParentAndCommit(dbSession, child, parent);
+    ruleActivator.setParentAndCommit(dbSession, child, parent);
 
     // Remove parent through WS
     ws.newRequest()
@@ -297,7 +305,7 @@ public class ChangeParentActionTest {
     assertThat(dbClient.activeRuleDao().selectByProfileUuid(dbSession, child.getKee())).isEmpty();
 
     // Set parent
-    qProfileTree.setParentAndCommit(dbSession, child, parent);
+    ruleActivator.setParentAndCommit(dbSession, child, parent);
 
     // Remove parent
     ws.newRequest()
@@ -324,7 +332,7 @@ public class ChangeParentActionTest {
     ruleIndexer.commitAndIndex(dbSession, asList(rule1.getKey(), rule2.getKey()));
     activeRuleIndexer.indexOnStartup(emptySet());
     // Set parent 1
-    qProfileTree.setParentAndCommit(dbSession, child, parent1);
+    ruleActivator.setParentAndCommit(dbSession, child, parent1);
     UserDto user = db.users().insertUser();
     db.qualityProfiles().addUserPermission(child, user);
     userSession.logIn(user);

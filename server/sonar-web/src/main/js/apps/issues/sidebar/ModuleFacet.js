@@ -113,7 +113,7 @@ export default class ModuleFacet extends React.PureComponent {
   render() {
     const values = this.props.modules.map(module => this.getModuleName(module));
     return (
-      <FacetBox property={this.property}>
+      <FacetBox>
         <FacetHeader
           name={translate('issues.facet', this.property)}
           onClear={this.handleClear}

@@ -23,8 +23,8 @@ import org.sonar.db.DbSession;
 
 public interface BuiltInQProfileInsert {
   /**
-   * Persist a new built-in profile and associate it to all existing organizations.
-   * Db sessions are committed and Elasticsearch indices are updated..
+   * Persist a built-in profile and associate it to all existing organizations.
+   * Db sessions are committed.
    */
   void create(DbSession session, DbSession batchSession, BuiltInQProfile builtInQProfile);
 }

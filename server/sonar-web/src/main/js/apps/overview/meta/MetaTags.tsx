@@ -104,7 +104,7 @@ export default class MetaTags extends React.PureComponent<Props, State> {
             className="button-link"
             onClick={this.handleClick}
             ref={tagsList => (this.tagsList = tagsList)}>
-            <TagsList allowUpdate={true} tags={tags.length ? tags : [translate('no_tags')]} />
+            <TagsList tags={tags.length ? tags : [translate('no_tags')]} allowUpdate={true} />
           </button>
           {popupOpen && (
             <div ref={tagsSelector => (this.tagsSelector = tagsSelector)}>
@@ -121,11 +121,7 @@ export default class MetaTags extends React.PureComponent<Props, State> {
     } else {
       return (
         <div className="overview-meta-card overview-meta-tags">
-          <TagsList
-            allowUpdate={false}
-            className="note"
-            tags={tags.length ? tags : [translate('no_tags')]}
-          />
+          <TagsList tags={tags.length ? tags : [translate('no_tags')]} allowUpdate={false} />
         </div>
       );
     }

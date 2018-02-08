@@ -55,10 +55,6 @@ public interface ActiveRuleMapper {
 
   List<ActiveRuleDto> selectByRuleProfileUuid(@Param("ruleProfileUuid") String uuid);
 
-  List<ActiveRuleDto> selectByRuleIdsAndRuleProfileUuids(
-    @Param("ruleIds") Collection<Integer> ruleIds,
-    @Param("ruleProfileUuids") Collection<String> ruleProfileUuids);
-
   void insertParameter(ActiveRuleParamDto dto);
 
   void updateParameter(ActiveRuleParamDto dto);

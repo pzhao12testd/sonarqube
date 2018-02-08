@@ -21,7 +21,7 @@ import * as React from 'react';
 import * as classNames from 'classnames';
 
 interface Props {
-  children?: React.ReactNode;
+  children?: JSX.Element | JSX.Element[];
   className?: string;
   loading?: boolean;
   customSpinner?: JSX.Element;
