@@ -76,7 +76,7 @@ public interface QualityProfileMapper {
 
   // INHERITANCE
 
-  List<QProfileDto> selectChildren(String uuid);
+  List<QProfileDto> selectChildren(@Param("uuids") Collection<String> uuids);
 
   // PROJECTS
 
@@ -125,5 +125,5 @@ public interface QualityProfileMapper {
 
   void renameRuleProfiles(@Param("newName") String newName, @Param("updatedAt") Date updatedAt, @Param("uuids") Collection<String> uuids);
 
-  List<QProfileDto> selectChildrenOfBuiltInRulesProfile(@Param("rulesProfileUuid") String rulesProfileUuid);
+  List<QProfileDto> selectQProfilesByRuleProfileUuid(@Param("rulesProfileUuid") String rulesProfileUuid);
 }

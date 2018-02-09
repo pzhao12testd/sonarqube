@@ -19,12 +19,19 @@
  */
 package org.sonar.server.qualityprofile;
 
+import java.util.List;
+import org.sonar.api.server.ServerSide;
 import org.sonar.db.DbSession;
+import org.sonar.db.qualityprofile.QProfileDto;
 
-public interface BuiltInQProfileInsert {
-  /**
-   * Persist a new built-in profile and associate it to all existing organizations.
-   * Db sessions are committed and Elasticsearch indices are updated..
-   */
-  void create(DbSession session, DbSession batchSession, BuiltInQProfile builtInQProfile);
+/**
+ * Operations related to hierarchy of profiles
+ */
+@ServerSide
+public interface QProfileTree {
+
+  List<ActiveRuleChange> removeParentAndCommit(DbSession dbSession, QProfileDto profile);
+
+  List<ActiveRuleChange> setParentAndCommit(DbSession dbSession, QProfileDto profile, QProfileDto parentProfile);
+  
 }
