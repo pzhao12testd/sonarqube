@@ -117,7 +117,7 @@ export default class LanguageFacet extends React.PureComponent {
   render() {
     const values = this.props.languages.map(language => this.getLanguageName(language));
     return (
-      <FacetBox property={this.property}>
+      <FacetBox>
         <FacetHeader
           name={translate('issues.facet', this.property)}
           onClear={this.handleClear}

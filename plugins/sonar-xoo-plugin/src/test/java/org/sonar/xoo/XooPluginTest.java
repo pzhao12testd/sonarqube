@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.sonar.api.Plugin;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
-import org.sonar.api.internal.PluginContextImpl;
 import org.sonar.api.internal.SonarRuntimeImpl;
 import org.sonar.api.utils.Version;
 import org.sonar.xoo.lang.CpdTokenizerSensor;
@@ -35,7 +34,7 @@ public class XooPluginTest {
   @Test
   public void provide_extensions_for_5_4() {
     SonarRuntime runtime = SonarRuntimeImpl.forSonarLint(Version.parse("5.4"));
-    Plugin.Context context = new PluginContextImpl.Builder().setSonarRuntime(runtime).build();
+    Plugin.Context context = new Plugin.Context(runtime);
     new XooPlugin().define(context);
     assertThat(context.getExtensions()).hasSize(46).doesNotContain(CpdTokenizerSensor.class);
   }
@@ -43,7 +42,7 @@ public class XooPluginTest {
   @Test
   public void provide_extensions_for_5_5() {
     SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.parse("5.5"), SonarQubeSide.SCANNER);
-    Plugin.Context context = new PluginContextImpl.Builder().setSonarRuntime(runtime).build();
+    Plugin.Context context = new Plugin.Context(runtime);
     new XooPlugin().define(context);
     assertThat(context.getExtensions()).hasSize(49).contains(CpdTokenizerSensor.class);
   }
@@ -51,7 +50,7 @@ public class XooPluginTest {
   @Test
   public void provide_extensions_for_6_6() {
     SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.parse("6.6"), SonarQubeSide.SCANNER);
-    Plugin.Context context = new PluginContextImpl.Builder().setSonarRuntime(runtime).build();
+    Plugin.Context context = new Plugin.Context(runtime);
     new XooPlugin().define(context);
     assertThat(context.getExtensions()).hasSize(50).contains(CpdTokenizerSensor.class);
   }

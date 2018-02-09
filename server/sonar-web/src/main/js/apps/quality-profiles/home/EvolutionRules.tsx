@@ -75,12 +75,11 @@ export default class EvolutionRules extends React.PureComponent<Props, State> {
 
   loadLatestRules() {
     const data = {
-      asc: false,
       available_since: this.periodStartDate,
-      f: 'name,langName,actives',
-      organization: this.props.organization || undefined,
+      s: 'createdAt',
+      asc: false,
       ps: RULES_LIMIT,
-      s: 'createdAt'
+      f: 'name,langName,actives'
     };
 
     searchRules(data).then(

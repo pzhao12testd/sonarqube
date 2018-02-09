@@ -37,6 +37,7 @@ public class QualityProfilePage {
   public RulesPage showMissingSonarWayRules() {
     Selenide.$(".quality-profile-rules-sonarway-missing")
       .shouldBe(Condition.visible).$("a").click();
+    Selenide.$(".coding-rules").shouldBe(Condition.visible);
     return Selenide.page(RulesPage.class);
   }
 

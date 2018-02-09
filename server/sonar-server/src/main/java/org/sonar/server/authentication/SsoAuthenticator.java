@@ -23,7 +23,6 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -41,19 +40,12 @@ import org.sonar.api.utils.System2;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.db.user.UserDto;
-import org.sonar.process.ProcessProperties;
 import org.sonar.server.authentication.event.AuthenticationEvent;
 import org.sonar.server.authentication.event.AuthenticationEvent.Source;
 import org.sonar.server.authentication.event.AuthenticationException;
 import org.sonar.server.exceptions.BadRequestException;
 
 import static org.apache.commons.lang.time.DateUtils.addMinutes;
-import static org.sonar.process.ProcessProperties.Property.SONAR_WEB_SSO_EMAIL_HEADER;
-import static org.sonar.process.ProcessProperties.Property.SONAR_WEB_SSO_ENABLE;
-import static org.sonar.process.ProcessProperties.Property.SONAR_WEB_SSO_GROUPS_HEADER;
-import static org.sonar.process.ProcessProperties.Property.SONAR_WEB_SSO_LOGIN_HEADER;
-import static org.sonar.process.ProcessProperties.Property.SONAR_WEB_SSO_NAME_HEADER;
-import static org.sonar.process.ProcessProperties.Property.SONAR_WEB_SSO_REFRESH_INTERVAL_IN_MINUTES;
 import static org.sonar.server.user.ExternalIdentity.SQ_AUTHORITY;
 
 public class SsoAuthenticator implements Startable {
@@ -62,14 +54,31 @@ public class SsoAuthenticator implements Startable {
 
   private static final Splitter COMA_SPLITTER = Splitter.on(",").trimResults().omitEmptyStrings();
 
+  private static final String ENABLE_PARAM = "sonar.web.sso.enable";
+
+  private static final String LOGIN_HEADER_PARAM = "sonar.web.sso.loginHeader";
+  private static final String LOGIN_HEADER_DEFAULT_VALUE = "X-Forwarded-Login";
+
+  private static final String NAME_HEADER_PARAM = "sonar.web.sso.nameHeader";
+  private static final String NAME_HEADER_DEFAULT_VALUE = "X-Forwarded-Name";
+
+  private static final String EMAIL_HEADER_PARAM = "sonar.web.sso.emailHeader";
+  private static final String EMAIL_HEADER_DEFAULT_VALUE = "X-Forwarded-Email";
+
+  private static final String GROUPS_HEADER_PARAM = "sonar.web.sso.groupsHeader";
+  private static final String GROUPS_HEADER_DEFAULT_VALUE = "X-Forwarded-Groups";
+
+  private static final String REFRESH_INTERVAL_PARAM = "sonar.web.sso.refreshIntervalInMinutes";
+  private static final String REFRESH_INTERVAL_DEFAULT_VALUE = "5";
+
   private static final String LAST_REFRESH_TIME_TOKEN_PARAM = "ssoLastRefreshTime";
 
-  private static final EnumSet<ProcessProperties.Property> SETTINGS = EnumSet.of(
-    SONAR_WEB_SSO_LOGIN_HEADER,
-    SONAR_WEB_SSO_NAME_HEADER,
-    SONAR_WEB_SSO_EMAIL_HEADER,
-    SONAR_WEB_SSO_GROUPS_HEADER,
-    SONAR_WEB_SSO_REFRESH_INTERVAL_IN_MINUTES);
+  private static final Map<String, String> DEFAULT_VALUES_BY_SETTING_KEYS = ImmutableMap.of(
+    LOGIN_HEADER_PARAM, LOGIN_HEADER_DEFAULT_VALUE,
+    NAME_HEADER_PARAM, NAME_HEADER_DEFAULT_VALUE,
+    EMAIL_HEADER_PARAM, EMAIL_HEADER_DEFAULT_VALUE,
+    GROUPS_HEADER_PARAM, GROUPS_HEADER_DEFAULT_VALUE,
+    REFRESH_INTERVAL_PARAM, REFRESH_INTERVAL_DEFAULT_VALUE);
 
   private final System2 system2;
   private final Configuration config;
@@ -91,10 +100,11 @@ public class SsoAuthenticator implements Startable {
 
   @Override
   public void start() {
-    if (config.getBoolean(SONAR_WEB_SSO_ENABLE.getKey()).orElse(false)) {
+    if (config.getBoolean(ENABLE_PARAM).orElse(false)) {
       LOG.info("SSO Authentication enabled");
       enabled = true;
-      SETTINGS.forEach(entry -> settingsByKey.put(entry.getKey(), config.get(entry.getKey()).orElse(entry.getDefaultValue())));
+      DEFAULT_VALUES_BY_SETTING_KEYS.entrySet()
+        .forEach(entry -> settingsByKey.put(entry.getKey(), config.get(entry.getKey()).orElse(DEFAULT_VALUES_BY_SETTING_KEYS.get(entry.getKey()))));
     }
   }
 
@@ -119,7 +129,7 @@ public class SsoAuthenticator implements Startable {
       return Optional.empty();
     }
     Map<String, String> headerValuesByNames = getHeaders(request);
-    String login = getHeaderValue(headerValuesByNames, SONAR_WEB_SSO_LOGIN_HEADER.getKey());
+    String login = getHeaderValue(headerValuesByNames, LOGIN_HEADER_PARAM);
     if (login == null) {
       return Optional.empty();
     }
@@ -140,7 +150,7 @@ public class SsoAuthenticator implements Startable {
       return Optional.empty();
     }
     Date now = new Date(system2.now());
-    int refreshIntervalInMinutes = Integer.parseInt(settingsByKey.get(SONAR_WEB_SSO_REFRESH_INTERVAL_IN_MINUTES.getKey()));
+    int refreshIntervalInMinutes = Integer.parseInt(settingsByKey.get(REFRESH_INTERVAL_PARAM));
     Long lastFreshTime = (Long) token.get().getProperties().get(LAST_REFRESH_TIME_TOKEN_PARAM);
     if (lastFreshTime == null || now.after(addMinutes(new Date(lastFreshTime), refreshIntervalInMinutes))) {
       return Optional.empty();
@@ -149,15 +159,15 @@ public class SsoAuthenticator implements Startable {
   }
 
   private UserDto doAuthenticate(Map<String, String> headerValuesByNames, String login) {
-    String name = getHeaderValue(headerValuesByNames, SONAR_WEB_SSO_NAME_HEADER.getKey());
-    String email = getHeaderValue(headerValuesByNames, SONAR_WEB_SSO_EMAIL_HEADER.getKey());
+    String name = getHeaderValue(headerValuesByNames, NAME_HEADER_PARAM);
+    String email = getHeaderValue(headerValuesByNames, EMAIL_HEADER_PARAM);
     UserIdentity.Builder userIdentityBuilder = UserIdentity.builder()
       .setLogin(login)
       .setName(name == null ? login : name)
       .setEmail(email)
       .setProviderLogin(login);
-    if (hasHeader(headerValuesByNames, SONAR_WEB_SSO_GROUPS_HEADER.getKey())) {
-      String groupsValue = getHeaderValue(headerValuesByNames, SONAR_WEB_SSO_GROUPS_HEADER.getKey());
+    if (hasHeader(headerValuesByNames, GROUPS_HEADER_PARAM)) {
+      String groupsValue = getHeaderValue(headerValuesByNames, GROUPS_HEADER_PARAM);
       userIdentityBuilder.setGroups(groupsValue == null ? Collections.emptySet() : new HashSet<>(COMA_SPLITTER.splitToList(groupsValue)));
     }
     return userIdentityAuthenticator.authenticate(userIdentityBuilder.build(), new SsoIdentityProvider(), Source.sso());

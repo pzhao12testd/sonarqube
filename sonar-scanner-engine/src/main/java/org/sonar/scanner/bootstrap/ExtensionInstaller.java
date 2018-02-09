@@ -24,8 +24,6 @@ import javax.annotation.Nullable;
 import org.sonar.api.ExtensionProvider;
 import org.sonar.api.Plugin;
 import org.sonar.api.SonarRuntime;
-import org.sonar.api.config.Configuration;
-import org.sonar.api.internal.PluginContextImpl;
 import org.sonar.core.platform.ComponentContainer;
 import org.sonar.core.platform.PluginInfo;
 import org.sonar.core.platform.PluginRepository;
@@ -35,14 +33,11 @@ public class ExtensionInstaller {
   private final SonarRuntime sonarRuntime;
   private final PluginRepository pluginRepository;
   private final GlobalAnalysisMode analysisMode;
-  private final Configuration bootConfiguration;
 
-  public ExtensionInstaller(SonarRuntime sonarRuntime, PluginRepository pluginRepository, GlobalAnalysisMode analysisMode,
-    Configuration bootConfiguration) {
+  public ExtensionInstaller(SonarRuntime sonarRuntime, PluginRepository pluginRepository, GlobalAnalysisMode analysisMode) {
     this.sonarRuntime = sonarRuntime;
     this.pluginRepository = pluginRepository;
     this.analysisMode = analysisMode;
-    this.bootConfiguration = bootConfiguration;
   }
 
   public ExtensionInstaller install(ComponentContainer container, ExtensionMatcher matcher) {
@@ -55,11 +50,7 @@ public class ExtensionInstaller {
     // plugin extensions
     for (PluginInfo pluginInfo : pluginRepository.getPluginInfos()) {
       Plugin plugin = pluginRepository.getPluginInstance(pluginInfo.getKey());
-      Plugin.Context context = new PluginContextImpl.Builder()
-        .setSonarRuntime(sonarRuntime)
-        .setBootConfiguration(bootConfiguration)
-        .build();
-
+      Plugin.Context context = new Plugin.Context(sonarRuntime);
       plugin.define(context);
       for (Object extension : context.getExtensions()) {
         doInstall(container, matcher, pluginInfo, extension);

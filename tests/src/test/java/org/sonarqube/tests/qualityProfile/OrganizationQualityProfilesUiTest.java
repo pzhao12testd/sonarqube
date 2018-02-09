@@ -170,7 +170,7 @@ public class OrganizationQualityProfilesUiTest {
     qpPage.shouldHaveMissingSonarWayRules(2);
     RulesPage rPage = qpPage.showMissingSonarWayRules();
     rPage.shouldHaveTotalRules(2);
-    rPage.openFacet("profile").getSelectedFacetItems("profile")
+    rPage.getSelectedFacetItems("qprofile")
       .shouldHaveSize(2)
       .findBy(Condition.cssClass("compare")).has(Condition.text("Sonar way"));
   }

@@ -35,7 +35,6 @@ type Props = {|
   languages: Array<string>,
   onChange: (changes: { [string]: Array<string> }) => void,
   onToggle: (property: string) => void,
-  organization: string | void;
   open: boolean,
   stats?: { [string]: number },
   referencedRules: { [string]: { name: string } },
@@ -69,11 +68,10 @@ export default class RuleFacet extends React.PureComponent {
   };
 
   handleSearch = (query /*: string */) => {
-    const { languages, organization } = this.props;
+    const { languages } = this.props;
     return searchRules({
       f: 'name,langName',
       languages: languages.length ? languages.join() : undefined,
-      organization,
       q: query
     }).then(response =>
       response.rules.map(rule => ({ label: `(${rule.langName}) ${rule.name}`, value: rule.key }))
@@ -131,7 +129,7 @@ export default class RuleFacet extends React.PureComponent {
   render() {
     const values = this.props.rules.map(rule => this.getRuleName(rule));
     return (
-      <FacetBox property={this.property}>
+      <FacetBox>
         <FacetHeader
           name={translate('issues.facet', this.property)}
           onClear={this.handleClear}

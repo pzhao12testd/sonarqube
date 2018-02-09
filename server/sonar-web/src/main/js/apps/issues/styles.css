@@ -121,6 +121,12 @@
   border: none;
 }
 
+.issues-filters-header {
+  margin-bottom: 12px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--barBorderColor);
+}
+
 .issues-my-issues-filter {
   margin-bottom: 24px;
   text-align: center;
@@ -130,6 +136,10 @@
   display: inline-block;
   min-width: 80px;
   text-align: right;
+}
+
+.issues .search-navigator-facet-footer {
+  padding: 0 0 10px 0;
 }
 
 .issues .issue-list {

@@ -91,19 +91,17 @@ export default class ProfileRules extends React.PureComponent<Props, State> {
   loadAllRules() {
     return searchRules({
       languages: this.props.profile.language,
-      facets: 'types',
-      organization: this.props.organization || undefined,
-      ps: 1
+      ps: 1,
+      facets: 'types'
     });
   }
 
   loadActivatedRules() {
     return searchRules({
+      qprofile: this.props.profile.key,
       activation: 'true',
-      facets: 'types',
-      organization: this.props.organization || undefined,
       ps: 1,
-      qprofile: this.props.profile.key
+      facets: 'types'
     });
   }
 

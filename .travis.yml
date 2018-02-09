@@ -9,7 +9,7 @@ before_cache:
 - echo CACHESIZE $(du -sk $HOME/CACHE)
 before_install:
 - wget http://mir.cs.illinois.edu/awshi2/starts-1.4.zip -P $HOME
-- unzip $HOME/starts-1.4.zip -d $HOME/.m2/repository
+- unzip -o $HOME/starts-1.4.zip -d $HOME/.m2/repository
 - find $HOME/CACHE -name jdeps-cache | while read line; do du -sh $line;         DIR=$(dirname
   ${line#$HOME/CACHE}); if [[ -d ${DIR#jdeps-cache/} ]]; then cp -r $line $DIR; fi;
   done

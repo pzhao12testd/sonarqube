@@ -41,7 +41,7 @@ type Props = {
 export default function AboutStandards(props /*: Props */) {
   const organization = props.appState.organizationsEnabled
     ? props.appState.defaultOrganization
-    : undefined;
+    : null;
 
   return (
     <div className="boxed-group">

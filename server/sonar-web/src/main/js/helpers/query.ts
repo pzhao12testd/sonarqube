@@ -18,7 +18,7 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import { isNil, omitBy } from 'lodash';
-import { isValidDate, parseDate, toNotSoISOString, toShortNotSoISOString } from './dates';
+import { isValidDate, parseDate, toNotSoISOString } from './dates';
 
 export interface RawQuery {
   [x: string]: any;
@@ -60,16 +60,6 @@ export function parseAsBoolean(value: string | undefined, defaultValue: boolean 
   return value === 'false' ? false : value === 'true' ? true : defaultValue;
 }
 
-export function parseAsOptionalBoolean(value: string | undefined): boolean | undefined {
-  if (value === 'true') {
-    return true;
-  } else if (value === 'false') {
-    return false;
-  } else {
-    return undefined;
-  }
-}
-
 export function parseAsDate(value?: string): Date | undefined {
   if (value) {
     const date = parseDate(value);
@@ -88,10 +78,6 @@ export function parseAsString(value: string | undefined): string {
   return value || '';
 }
 
-export function parseAsOptionalString(value: string | undefined): string | undefined {
-  return value || undefined;
-}
-
 export function parseAsArray(
   value: string | undefined,
   itemParser: (x: string) => string
@@ -99,31 +85,17 @@ export function parseAsArray(
   return value ? value.split(',').map(itemParser) : [];
 }
 
-export function serializeDate(value?: Date, serializer = toNotSoISOString): string | undefined {
+export function serializeDate(value?: Date): string | undefined {
   if (value != null && value.toISOString) {
-    return serializer(value);
+    return toNotSoISOString(value);
   }
   return undefined;
 }
 
-export function serializeDateShort(value: Date | undefined): string | undefined {
-  return serializeDate(value, toShortNotSoISOString);
-}
-
-export function serializeString(value: string | undefined): string | undefined {
+export function serializeString(value: string): string | undefined {
   return value || undefined;
 }
 
 export function serializeStringArray(value: string[] | undefined[]): string | undefined {
   return value && value.length ? value.join() : undefined;
-}
-
-export function serializeOptionalBoolean(value: boolean | undefined): string | undefined {
-  if (value === true) {
-    return 'true';
-  } else if (value === false) {
-    return 'false';
-  } else {
-    return undefined;
-  }
 }
