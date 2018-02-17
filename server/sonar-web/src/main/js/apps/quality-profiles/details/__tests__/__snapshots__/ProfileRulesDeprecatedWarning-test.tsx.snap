@@ -21,16 +21,7 @@ exports[`should render correctly 1`] = `
     className="pull-right"
     onlyActiveOnIndex={false}
     style={Object {}}
-    to={
-      Object {
-        "pathname": "/organizations/foo/rules",
-        "query": Object {
-          "activation": "true",
-          "qprofile": "bar",
-          "statuses": "DEPRECATED",
-        },
-      }
-    }
+    to="/organizations/foo/rules#qprofile=bar|activation=true|statuses=DEPRECATED"
   >
     18
   </Link>

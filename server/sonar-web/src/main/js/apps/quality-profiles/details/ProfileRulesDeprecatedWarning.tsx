@@ -30,6 +30,7 @@ interface Props {
 }
 
 export default function ProfileRulesDeprecatedWarning(props: Props) {
+  const url = getDeprecatedActiveRulesUrl({ qprofile: props.profile }, props.organization);
   return (
     <div className="quality-profile-rules-deprecated clearfix">
       <span className="pull-left">
@@ -38,9 +39,7 @@ export default function ProfileRulesDeprecatedWarning(props: Props) {
           <i className="icon-help spacer-left" />
         </Tooltip>
       </span>
-      <Link
-        className="pull-right"
-        to={getDeprecatedActiveRulesUrl({ qprofile: props.profile }, props.organization)}>
+      <Link className="pull-right" to={url}>
         {props.activeDeprecatedRules}
       </Link>
     </div>

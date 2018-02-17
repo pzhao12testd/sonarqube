@@ -116,19 +116,6 @@ configureTravis
 # @TravisCI please provide the feature natively, like at AppVeyor or CircleCI ;-)
 cancel_branch_build_with_pr || if [[ $? -eq 1 ]]; then exit 0; fi
 
-# configure environment variables for Artifactory
-export GIT_COMMIT=$TRAVIS_COMMIT
-export BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
-if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-  export GIT_BRANCH=$TRAVIS_BRANCH
-  unset PULL_REQUEST_BRANCH_TARGET
-  unset PULL_REQUEST_NUMBER
-else
-  export GIT_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
-  export PULL_REQUEST_BRANCH_TARGET=$TRAVIS_BRANCH
-  export PULL_REQUEST_NUMBER=$TRAVIS_PULL_REQUEST
-fi
-
 case "$TARGET" in
 
 BUILD)
@@ -161,9 +148,9 @@ BUILD)
           -Dsonar.host.url=$SONAR_HOST_URL \
           -Dsonar.login=$SONAR_TOKEN \
           -Dsonar.projectVersion=$INITIAL_VERSION \
-          -Dsonar.analysis.buildNumber=$BUILD_NUMBER \
-          -Dsonar.analysis.pipeline=$BUILD_NUMBER \
-          -Dsonar.analysis.sha1=$GIT_COMMIT \
+          -Dsonar.analysis.buildNumber=$TRAVIS_BUILD_NUMBER \
+          -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
+          -Dsonar.analysis.sha1=$TRAVIS_COMMIT \
           -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG
 
   elif [[ "$TRAVIS_BRANCH" == "branch-"* ]] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
@@ -178,11 +165,11 @@ BUILD)
         -Dsonar.login=$SONAR_TOKEN \
         -Dsonar.branch.name=$TRAVIS_BRANCH \
         -Dsonar.projectVersion=$INITIAL_VERSION \
-        -Dsonar.analysis.buildNumber=$BUILD_NUMBER \
-        -Dsonar.analysis.pipeline=$BUILD_NUMBER \
-        -Dsonar.analysis.sha1=$GIT_COMMIT \
+        -Dsonar.analysis.buildNumber=$TRAVIS_BUILD_NUMBER \
+        -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
+        -Dsonar.analysis.sha1=$TRAVIS_COMMIT \
         -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG
-  
+
   elif [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN:-}" ]; then
     echo 'Build and analyze internal pull request'
 
@@ -191,25 +178,22 @@ BUILD)
         -Dsource.skip=true \
         -Pdeploy-sonarsource
 
-    # TODO remove the sonar.pullrequest.github.* settings after sonar-core-plugins 7.1.0.330 is deployed on Next
     mvn sonar:sonar \
         -Dsonar.host.url=$SONAR_HOST_URL \
         -Dsonar.login=$SONAR_TOKEN \
         -Dsonar.branch.name=$TRAVIS_PULL_REQUEST_BRANCH \
         -Dsonar.branch.target=$TRAVIS_BRANCH \
-        -Dsonar.analysis.buildNumber=$BUILD_NUMBER \
-        -Dsonar.analysis.pipeline=$BUILD_NUMBER \
+        -Dsonar.analysis.buildNumber=$TRAVIS_BUILD_NUMBER \
+        -Dsonar.analysis.pipeline=$TRAVIS_BUILD_NUMBER \
         -Dsonar.analysis.sha1=$TRAVIS_PULL_REQUEST_SHA \
         -Dsonar.analysis.prNumber=$TRAVIS_PULL_REQUEST \
         -Dsonar.analysis.repository=$TRAVIS_REPO_SLUG \
-        -Dsonar.pullrequest.id=$TRAVIS_PULL_REQUEST \
         -Dsonar.pullrequest.github.id=$TRAVIS_PULL_REQUEST \
         -Dsonar.pullrequest.github.repository=$TRAVIS_REPO_SLUG
-
   else
     echo 'Build feature branch or external pull request'
 
-    mvn deploy $MAVEN_ARGS -Dsource.skip=true -Pdeploy-sonarsource
+    mvn install $MAVEN_ARGS -Dsource.skip=true
   fi
 
   ./run-integration-tests.sh "Lite" ""

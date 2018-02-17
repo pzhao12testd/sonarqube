@@ -23,8 +23,7 @@ import org.sonar.db.organization.OrganizationDto;
 import org.sonar.db.qualityprofile.QProfileDto;
 
 /**
- * Utility class for tests involving quality profiles.
- * @deprecated replaced by {@link org.sonar.db.qualityprofile.QualityProfileDbTester}
+ * Utility class for tests involving quality profiles
  */
 @Deprecated
 public class QProfileTesting {

@@ -21,17 +21,7 @@ exports[`should render correctly 1`] = `
     className="pull-right"
     onlyActiveOnIndex={false}
     style={Object {}}
-    to={
-      Object {
-        "pathname": "/organizations/foo/rules",
-        "query": Object {
-          "activation": "false",
-          "compareToProfile": "baz",
-          "languages": "Java",
-          "qprofile": "bar",
-        },
-      }
-    }
+    to="/organizations/foo/rules#qprofile=bar|activation=false|compareToProfile=baz|languages=Java"
   >
     158
   </Link>

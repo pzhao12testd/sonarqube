@@ -17,34 +17,18 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import { post, getJSON, postJSON } from '../helpers/request';
+import { post, getJSON, RequestData } from '../helpers/request';
 import throwGlobalError from '../app/utils/throwGlobalError';
-import { Rule, RuleDetails, RuleActivation } from '../app/types';
 
 export interface GetRulesAppResponse {
-  canWrite?: boolean;
-  repositories: { key: string; language: string; name: string }[];
+  respositories: Array<{ key: string; language: string; name: string }>;
 }
 
-export function getRulesApp(data: {
-  organization: string | undefined;
-}): Promise<GetRulesAppResponse> {
-  return getJSON('/api/rules/app', data).catch(throwGlobalError);
+export function getRulesApp(): Promise<GetRulesAppResponse> {
+  return getJSON('/api/rules/app').catch(throwGlobalError);
 }
 
-export interface SearchRulesResponse {
-  actives?: { [rule: string]: RuleActivation[] };
-  facets?: { property: string; values: { count: number; val: string }[] }[];
-  p: number;
-  ps: number;
-  rules: Rule[];
-  total: number;
-}
-
-export function searchRules(data: {
-  organization: string | undefined;
-  [x: string]: any;
-}): Promise<SearchRulesResponse> {
+export function searchRules(data: RequestData) {
   return getJSON('/api/rules/search', data).catch(throwGlobalError);
 }
 
@@ -53,65 +37,20 @@ export function takeFacet(response: any, property: string) {
   return facet ? facet.values : [];
 }
 
-export function getRuleDetails(parameters: {
+export interface GetRuleDetailsParameters {
   actives?: boolean;
   key: string;
-  organization: string | undefined;
-}): Promise<{ actives?: RuleActivation[]; rule: RuleDetails }> {
+  organization?: string;
+}
+
+export function getRuleDetails(parameters: GetRuleDetailsParameters): Promise<any> {
   return getJSON('/api/rules/show', parameters).catch(throwGlobalError);
 }
 
-export function getRuleTags(parameters: {
-  organization: string | undefined;
-  ps?: number;
-  q: string;
-}): Promise<string[]> {
+export function getRuleTags(parameters: { organization?: string }): Promise<string[]> {
   return getJSON('/api/rules/tags', parameters).then(r => r.tags, throwGlobalError);
 }
 
-export function createRule(data: {
-  custom_key: string;
-  markdown_description: string;
-  name: string;
-  organization: string | undefined;
-  params?: string;
-  prevent_reactivation?: boolean;
-  severity?: string;
-  status?: string;
-  template_key: string;
-  type?: string;
-}): Promise<RuleDetails> {
-  return postJSON('/api/rules/create', data).then(
-    r => r.rule,
-    error => {
-      // do not show global error if the status code is 409
-      // this case should be handled inside a component
-      if (error && error.response && error.response.status === 409) {
-        return Promise.reject(error.response);
-      } else {
-        return throwGlobalError(error);
-      }
-    }
-  );
-}
-
-export function deleteRule(parameters: { key: string; organization: string | undefined }) {
+export function deleteRule(parameters: { key: string }) {
   return post('/api/rules/delete', parameters).catch(throwGlobalError);
-}
-
-export function updateRule(data: {
-  key: string;
-  markdown_description?: string;
-  markdown_note?: string;
-  name?: string;
-  organization: string | undefined;
-  params?: string;
-  remediation_fn_base_effort?: string;
-  remediation_fn_type?: string;
-  remediation_fy_gap_multiplier?: string;
-  severity?: string;
-  status?: string;
-  tags?: string;
-}): Promise<RuleDetails> {
-  return postJSON('/api/rules/update', data).then(r => r.rule, throwGlobalError);
 }

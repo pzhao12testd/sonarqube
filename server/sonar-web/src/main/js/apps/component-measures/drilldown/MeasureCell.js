@@ -21,26 +21,23 @@
 import React from 'react';
 import Measure from '../../../components/measure/Measure';
 import { isDiffMetric } from '../../../helpers/measures';
-/*:: import type { ComponentEnhanced } from '../types'; */
-/*:: import type { MeasureEnhanced } from '../../../components/measure/types'; */
+/*:: import type { Component } from '../types'; */
 /*:: import type { Metric } from '../../../store/metrics/actions'; */
 
 /*:: type Props = {
-  component: ComponentEnhanced,
-  measure?: MeasureEnhanced,
+  component: Component,
   metric: Metric
 }; */
 
-export default function MeasureCell({ component, measure, metric } /*: Props */) {
-  const getValue = (item /*: { leak?: ?string; value?: string } */) =>
-    isDiffMetric(metric.key) ? item.leak : item.value;
-
-  const value = getValue(measure || component);
-
+export default function MeasureCell({ component, metric } /*: Props */) {
   return (
     <td className="thin nowrap text-right">
       <span id={`component-measures-component-measure-${component.key}-${metric.key}`}>
-        <Measure value={value} metricKey={metric.key} metricType={metric.type} />
+        <Measure
+          value={isDiffMetric(metric.key) ? component.leak : component.value}
+          metricKey={metric.key}
+          metricType={metric.type}
+        />
       </span>
     </td>
   );

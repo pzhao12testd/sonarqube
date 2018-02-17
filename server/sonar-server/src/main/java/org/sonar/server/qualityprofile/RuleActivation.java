@@ -28,9 +28,6 @@ import javax.annotation.concurrent.Immutable;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rule.Severity;
 
-/**
- * The request for activation.
- */
 @Immutable
 public class RuleActivation {
 

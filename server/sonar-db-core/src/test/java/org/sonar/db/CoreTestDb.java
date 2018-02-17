@@ -43,8 +43,6 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonar.db.dialect.H2;
 import org.sonar.process.logging.LogbackHelper;
 
-import static org.sonar.process.ProcessProperties.Property.JDBC_USERNAME;
-
 /**
  * This class should be call using @ClassRule in order to create the schema once (if @Rule is used
  * the schema will be recreated before each test).
@@ -76,7 +74,7 @@ class CoreTestDb {
       if (settings.hasKey("orchestrator.configUrl")) {
         loadOrchestratorSettings(settings);
       }
-      String login = settings.getString(JDBC_USERNAME.getKey());
+      String login = settings.getString("sonar.jdbc.username");
       for (String key : settings.getKeysStartingWith("sonar.jdbc")) {
         LOG.info(key + ": " + settings.getString(key));
       }

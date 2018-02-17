@@ -32,7 +32,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.application.logging.ListAppender;
 import org.sonar.process.ProcessProperties;
-import org.sonar.process.ProcessProperties.Property;
 import org.sonar.process.Props;
 import org.sonar.process.System2;
 
@@ -40,18 +39,8 @@ import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.sonar.process.ProcessProperties.Property.CLUSTER_NAME;
-import static org.sonar.process.ProcessProperties.Property.CLUSTER_NODE_NAME;
-import static org.sonar.process.ProcessProperties.Property.CLUSTER_SEARCH_HOSTS;
-import static org.sonar.process.ProcessProperties.Property.PATH_DATA;
-import static org.sonar.process.ProcessProperties.Property.PATH_HOME;
-import static org.sonar.process.ProcessProperties.Property.PATH_LOGS;
-import static org.sonar.process.ProcessProperties.Property.PATH_TEMP;
-import static org.sonar.process.ProcessProperties.Property.SEARCH_HOST;
-import static org.sonar.process.ProcessProperties.Property.SEARCH_HTTP_PORT;
-import static org.sonar.process.ProcessProperties.Property.SEARCH_INITIAL_STATE_TIMEOUT;
-import static org.sonar.process.ProcessProperties.Property.SEARCH_MINIMUM_MASTER_NODES;
-import static org.sonar.process.ProcessProperties.Property.SEARCH_PORT;
+import static org.sonar.process.ProcessProperties.CLUSTER_NAME;
+import static org.sonar.process.ProcessProperties.CLUSTER_SEARCH_HOSTS;
 
 public class EsSettingsTest {
 
@@ -108,11 +97,11 @@ public class EsSettingsTest {
 
   private Props minimalProps() {
     Props props = new Props(new Properties());
-    props.set(PATH_HOME.getKey(), randomAlphanumeric(12));
-    props.set(PATH_DATA.getKey(), randomAlphanumeric(12));
-    props.set(PATH_TEMP.getKey(), randomAlphanumeric(12));
-    props.set(PATH_LOGS.getKey(), randomAlphanumeric(12));
-    props.set(CLUSTER_NAME.getKey(), randomAlphanumeric(12));
+    props.set(ProcessProperties.PATH_HOME, randomAlphanumeric(12));
+    props.set(ProcessProperties.PATH_DATA, randomAlphanumeric(12));
+    props.set(ProcessProperties.PATH_TEMP, randomAlphanumeric(12));
+    props.set(ProcessProperties.PATH_LOGS, randomAlphanumeric(12));
+    props.set(CLUSTER_NAME, randomAlphanumeric(12));
     return props;
   }
 
@@ -120,13 +109,13 @@ public class EsSettingsTest {
   public void test_default_settings_for_standalone_mode() throws Exception {
     File homeDir = temp.newFolder();
     Props props = new Props(new Properties());
-    props.set(SEARCH_PORT.getKey(), "1234");
-    props.set(SEARCH_HOST.getKey(), "127.0.0.1");
-    props.set(PATH_HOME.getKey(), homeDir.getAbsolutePath());
-    props.set(PATH_DATA.getKey(), temp.newFolder().getAbsolutePath());
-    props.set(PATH_TEMP.getKey(), temp.newFolder().getAbsolutePath());
-    props.set(PATH_LOGS.getKey(), temp.newFolder().getAbsolutePath());
-    props.set(CLUSTER_NAME.getKey(), "sonarqube");
+    props.set(ProcessProperties.SEARCH_PORT, "1234");
+    props.set(ProcessProperties.SEARCH_HOST, "127.0.0.1");
+    props.set(ProcessProperties.PATH_HOME, homeDir.getAbsolutePath());
+    props.set(ProcessProperties.PATH_DATA, temp.newFolder().getAbsolutePath());
+    props.set(ProcessProperties.PATH_TEMP, temp.newFolder().getAbsolutePath());
+    props.set(ProcessProperties.PATH_LOGS, temp.newFolder().getAbsolutePath());
+    props.set(CLUSTER_NAME, "sonarqube");
 
     EsSettings esSettings = new EsSettings(props, new EsInstallation(props), System2.INSTANCE);
 
@@ -157,15 +146,15 @@ public class EsSettingsTest {
   public void test_default_settings_for_cluster_mode() throws Exception {
     File homeDir = temp.newFolder();
     Props props = new Props(new Properties());
-    props.set(SEARCH_PORT.getKey(), "1234");
-    props.set(SEARCH_HOST.getKey(), "127.0.0.1");
-    props.set(PATH_HOME.getKey(), homeDir.getAbsolutePath());
-    props.set(PATH_DATA.getKey(), temp.newFolder().getAbsolutePath());
-    props.set(PATH_TEMP.getKey(), temp.newFolder().getAbsolutePath());
-    props.set(PATH_LOGS.getKey(), temp.newFolder().getAbsolutePath());
-    props.set(CLUSTER_NAME.getKey(), "sonarqube-1");
-    props.set(Property.CLUSTER_ENABLED.getKey(), "true");
-    props.set(CLUSTER_NODE_NAME.getKey(), "node-1");
+    props.set(ProcessProperties.SEARCH_PORT, "1234");
+    props.set(ProcessProperties.SEARCH_HOST, "127.0.0.1");
+    props.set(ProcessProperties.PATH_HOME, homeDir.getAbsolutePath());
+    props.set(ProcessProperties.PATH_DATA, temp.newFolder().getAbsolutePath());
+    props.set(ProcessProperties.PATH_TEMP, temp.newFolder().getAbsolutePath());
+    props.set(ProcessProperties.PATH_LOGS, temp.newFolder().getAbsolutePath());
+    props.set(ProcessProperties.CLUSTER_NAME, "sonarqube-1");
+    props.set(ProcessProperties.CLUSTER_ENABLED, "true");
+    props.set(ProcessProperties.CLUSTER_NODE_NAME, "node-1");
 
     EsSettings esSettings = new EsSettings(props, new EsInstallation(props), System2.INSTANCE);
 
@@ -178,14 +167,14 @@ public class EsSettingsTest {
   public void test_node_name_default_for_cluster_mode() throws Exception {
     File homeDir = temp.newFolder();
     Props props = new Props(new Properties());
-    props.set(CLUSTER_NAME.getKey(), "sonarqube");
-    props.set(Property.CLUSTER_ENABLED.getKey(), "true");
-    props.set(SEARCH_PORT.getKey(), "1234");
-    props.set(SEARCH_HOST.getKey(), "127.0.0.1");
-    props.set(PATH_HOME.getKey(), homeDir.getAbsolutePath());
-    props.set(PATH_DATA.getKey(), temp.newFolder().getAbsolutePath());
-    props.set(PATH_TEMP.getKey(), temp.newFolder().getAbsolutePath());
-    props.set(PATH_LOGS.getKey(), temp.newFolder().getAbsolutePath());
+    props.set(ProcessProperties.CLUSTER_NAME, "sonarqube");
+    props.set(ProcessProperties.CLUSTER_ENABLED, "true");
+    props.set(ProcessProperties.SEARCH_PORT, "1234");
+    props.set(ProcessProperties.SEARCH_HOST, "127.0.0.1");
+    props.set(ProcessProperties.PATH_HOME, homeDir.getAbsolutePath());
+    props.set(ProcessProperties.PATH_DATA, temp.newFolder().getAbsolutePath());
+    props.set(ProcessProperties.PATH_TEMP, temp.newFolder().getAbsolutePath());
+    props.set(ProcessProperties.PATH_LOGS, temp.newFolder().getAbsolutePath());
     EsSettings esSettings = new EsSettings(props, new EsInstallation(props), System2.INSTANCE);
     Map<String, String> generated = esSettings.build();
     assertThat(generated.get("node.name")).startsWith("sonarqube-");
@@ -195,14 +184,14 @@ public class EsSettingsTest {
   public void test_node_name_default_for_standalone_mode() throws Exception {
     File homeDir = temp.newFolder();
     Props props = new Props(new Properties());
-    props.set(CLUSTER_NAME.getKey(), "sonarqube");
-    props.set(Property.CLUSTER_ENABLED.getKey(), "false");
-    props.set(SEARCH_PORT.getKey(), "1234");
-    props.set(SEARCH_HOST.getKey(), "127.0.0.1");
-    props.set(PATH_HOME.getKey(), homeDir.getAbsolutePath());
-    props.set(PATH_DATA.getKey(), temp.newFolder().getAbsolutePath());
-    props.set(PATH_TEMP.getKey(), temp.newFolder().getAbsolutePath());
-    props.set(PATH_LOGS.getKey(), temp.newFolder().getAbsolutePath());
+    props.set(ProcessProperties.CLUSTER_NAME, "sonarqube");
+    props.set(ProcessProperties.CLUSTER_ENABLED, "false");
+    props.set(ProcessProperties.SEARCH_PORT, "1234");
+    props.set(ProcessProperties.SEARCH_HOST, "127.0.0.1");
+    props.set(ProcessProperties.PATH_HOME, homeDir.getAbsolutePath());
+    props.set(ProcessProperties.PATH_DATA, temp.newFolder().getAbsolutePath());
+    props.set(ProcessProperties.PATH_TEMP, temp.newFolder().getAbsolutePath());
+    props.set(ProcessProperties.PATH_LOGS, temp.newFolder().getAbsolutePath());
     EsSettings esSettings = new EsSettings(props, new EsInstallation(props), System2.INSTANCE);
     Map<String, String> generated = esSettings.build();
     assertThat(generated.get("node.name")).isEqualTo("sonarqube");
@@ -227,7 +216,7 @@ public class EsSettingsTest {
   @Test
   public void set_discovery_settings_if_cluster_is_enabled() throws Exception {
     Props props = minProps(CLUSTER_ENABLED);
-    props.set(CLUSTER_SEARCH_HOSTS.getKey(), "1.2.3.4:9000,1.2.3.5:8080");
+    props.set(CLUSTER_SEARCH_HOSTS, "1.2.3.4:9000,1.2.3.5:8080");
     Map<String, String> settings = new EsSettings(props, new EsInstallation(props), System2.INSTANCE).build();
 
     assertThat(settings.get("discovery.zen.ping.unicast.hosts")).isEqualTo("1.2.3.4:9000,1.2.3.5:8080");
@@ -238,7 +227,7 @@ public class EsSettingsTest {
   @Test
   public void incorrect_values_of_minimum_master_nodes() throws Exception {
     Props props = minProps(CLUSTER_ENABLED);
-    props.set(SEARCH_MINIMUM_MASTER_NODES.getKey(), "ꝱꝲꝳପ");
+    props.set(ProcessProperties.SEARCH_MINIMUM_MASTER_NODES, "ꝱꝲꝳପ");
 
     EsSettings underTest = new EsSettings(props, new EsInstallation(props), System2.INSTANCE);
 
@@ -250,7 +239,7 @@ public class EsSettingsTest {
   @Test
   public void cluster_is_enabled_with_defined_minimum_master_nodes() throws Exception {
     Props props = minProps(CLUSTER_ENABLED);
-    props.set(SEARCH_MINIMUM_MASTER_NODES.getKey(), "5");
+    props.set(ProcessProperties.SEARCH_MINIMUM_MASTER_NODES, "5");
     Map<String, String> settings = new EsSettings(props, new EsInstallation(props), System2.INSTANCE).build();
 
     assertThat(settings.get("discovery.zen.minimum_master_nodes")).isEqualTo("5");
@@ -259,7 +248,7 @@ public class EsSettingsTest {
   @Test
   public void cluster_is_enabled_with_defined_initialTimeout() throws Exception {
     Props props = minProps(CLUSTER_ENABLED);
-    props.set(SEARCH_INITIAL_STATE_TIMEOUT.getKey(), "10s");
+    props.set(ProcessProperties.SEARCH_INITIAL_STATE_TIMEOUT, "10s");
     Map<String, String> settings = new EsSettings(props, new EsInstallation(props), System2.INSTANCE).build();
 
     assertThat(settings.get("discovery.initial_state_timeout")).isEqualTo("10s");
@@ -268,7 +257,7 @@ public class EsSettingsTest {
   @Test
   public void in_standalone_initialTimeout_is_not_overridable() throws Exception {
     Props props = minProps(CLUSTER_DISABLED);
-    props.set(SEARCH_INITIAL_STATE_TIMEOUT.getKey(), "10s");
+    props.set(ProcessProperties.SEARCH_INITIAL_STATE_TIMEOUT, "10s");
     Map<String, String> settings = new EsSettings(props, new EsInstallation(props), System2.INSTANCE).build();
 
     assertThat(settings.get("discovery.initial_state_timeout")).isEqualTo("30s");
@@ -277,7 +266,7 @@ public class EsSettingsTest {
   @Test
   public void in_standalone_minimumMasterNodes_is_not_overridable() throws Exception {
     Props props = minProps(CLUSTER_DISABLED);
-    props.set(SEARCH_MINIMUM_MASTER_NODES.getKey(), "5");
+    props.set(ProcessProperties.SEARCH_MINIMUM_MASTER_NODES, "5");
     Map<String, String> settings = new EsSettings(props, new EsInstallation(props), System2.INSTANCE).build();
 
     assertThat(settings.get("discovery.zen.minimum_master_nodes")).isEqualTo("1");
@@ -286,7 +275,7 @@ public class EsSettingsTest {
   @Test
   public void enable_http_connector() throws Exception {
     Props props = minProps(CLUSTER_DISABLED);
-    props.set(SEARCH_HTTP_PORT.getKey(), "9010");
+    props.set(ProcessProperties.SEARCH_HTTP_PORT, "9010");
     Map<String, String> settings = new EsSettings(props, new EsInstallation(props), System2.INSTANCE).build();
 
     assertThat(settings.get("http.port")).isEqualTo("9010");
@@ -297,8 +286,8 @@ public class EsSettingsTest {
   @Test
   public void enable_http_connector_different_host() throws Exception {
     Props props = minProps(CLUSTER_DISABLED);
-    props.set(SEARCH_HTTP_PORT.getKey(), "9010");
-    props.set(SEARCH_HOST.getKey(), "127.0.0.2");
+    props.set(ProcessProperties.SEARCH_HTTP_PORT, "9010");
+    props.set(ProcessProperties.SEARCH_HOST, "127.0.0.2");
     Map<String, String> settings = new EsSettings(props, new EsInstallation(props), System2.INSTANCE).build();
 
     assertThat(settings.get("http.port")).isEqualTo("9010");
@@ -310,8 +299,8 @@ public class EsSettingsTest {
     File homeDir = temp.newFolder();
     Props props = new Props(new Properties());
     ProcessProperties.completeDefaults(props);
-    props.set(PATH_HOME.getKey(), homeDir.getAbsolutePath());
-    props.set(Property.CLUSTER_ENABLED.getKey(), Boolean.toString(cluster));
+    props.set(ProcessProperties.PATH_HOME, homeDir.getAbsolutePath());
+    props.set(ProcessProperties.CLUSTER_ENABLED, Boolean.toString(cluster));
     return props;
   }
 }

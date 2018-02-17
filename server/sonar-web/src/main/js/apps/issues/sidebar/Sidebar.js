@@ -127,7 +127,6 @@ export default class Sidebar extends React.PureComponent {
           languages={query.languages}
           onChange={this.props.onFilterChange}
           onToggle={this.props.onFacetToggle}
-          organization={this.props.organization && this.props.organization.key}
           open={!!openFacets.rules}
           stats={facets.rules}
           referencedRules={this.props.referencedRules}

@@ -94,7 +94,6 @@ export default class Meta extends React.PureComponent<Props> {
           <MetaQualityProfiles
             component={component}
             customOrganizations={organizationsEnabled}
-            organization={component.organization}
             profiles={qualityProfiles}
           />
         )}

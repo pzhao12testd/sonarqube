@@ -23,15 +23,18 @@ import './TagsList.css';
 
 interface Props {
   allowUpdate?: boolean;
-  className?: string;
+  customClass?: string;
   tags: string[];
 }
 
-export default function TagsList({ allowUpdate = false, className, tags }: Props) {
+export default function TagsList({ allowUpdate = false, customClass, tags }: Props) {
+  const spanClass = classNames('text-ellipsis', { note: !allowUpdate });
+  const tagListClass = classNames('tags-list', customClass);
+
   return (
-    <span className={classNames('tags-list', className)} title={tags.join(', ')}>
-      <i className="icon-tags" />
-      <span className="text-ellipsis">{tags.join(', ')}</span>
+    <span className={tagListClass} title={tags.join(', ')}>
+      <i className="icon-tags icon-half-transparent" />
+      <span className={spanClass}>{tags.join(', ')}</span>
       {allowUpdate && <i className="icon-dropdown" />}
     </span>
   );

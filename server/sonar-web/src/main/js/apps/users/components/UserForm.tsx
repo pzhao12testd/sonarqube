@@ -121,7 +121,7 @@ export default class UserForm extends React.PureComponent<Props, State> {
     event.preventDefault();
     this.setState({ submitting: true });
     updateUser({
-      email: this.state.email,
+      email: this.state.email || undefined,
       login: this.state.login,
       name: this.state.name,
       scmAccount: uniq(this.state.scmAccounts).join(',')

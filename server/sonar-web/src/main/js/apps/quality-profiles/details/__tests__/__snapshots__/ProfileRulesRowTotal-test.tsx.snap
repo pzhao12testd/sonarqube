@@ -13,15 +13,7 @@ exports[`should render correctly 1`] = `
     <Link
       onlyActiveOnIndex={false}
       style={Object {}}
-      to={
-        Object {
-          "pathname": "/organizations/foo/rules",
-          "query": Object {
-            "activation": "true",
-            "qprofile": "bar",
-          },
-        }
-      }
+      to="/organizations/foo/rules#qprofile=bar|activation=true"
     >
       <strong>
         3
@@ -35,15 +27,7 @@ exports[`should render correctly 1`] = `
       className="small text-muted"
       onlyActiveOnIndex={false}
       style={Object {}}
-      to={
-        Object {
-          "pathname": "/organizations/foo/rules",
-          "query": Object {
-            "activation": "false",
-            "qprofile": "bar",
-          },
-        }
-      }
+      to="/organizations/foo/rules#qprofile=bar|activation=false"
     >
       <strong>
         7
@@ -66,15 +50,7 @@ exports[`should render correctly if there is 0 rules 1`] = `
     <Link
       onlyActiveOnIndex={false}
       style={Object {}}
-      to={
-        Object {
-          "pathname": "/coding_rules",
-          "query": Object {
-            "activation": "true",
-            "qprofile": "bar",
-          },
-        }
-      }
+      to="/coding_rules#qprofile=bar|activation=true"
     >
       <strong>
         0
@@ -106,15 +82,7 @@ exports[`should render correctly if there is missing data 1`] = `
     <Link
       onlyActiveOnIndex={false}
       style={Object {}}
-      to={
-        Object {
-          "pathname": "/coding_rules",
-          "query": Object {
-            "activation": "true",
-            "qprofile": "bar",
-          },
-        }
-      }
+      to="/coding_rules#qprofile=bar|activation=true"
     >
       <strong>
         5
